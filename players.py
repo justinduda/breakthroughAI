@@ -64,8 +64,16 @@ class AI:
         def cutoff_test(state, depth):
             return depth == self.cut_off_depth or state.utility()
 
-        def minimax_search(self, state, depth):
+        def better_state(min_or_max):
+            def better_state_func((s1, i1), (s2, i2)):
+                val = min_or_max(i1, i2)
+                if i1 == val:
+                    return (s1, i1)
+                else:
+                    return (s2, i2)
+            return better_state_func
 
+        def minimax_search(self, state, depth):
             
             def minimax(cur_state, depth):  
                 if cutoff_test(cur_state, depth):
@@ -75,14 +83,6 @@ class AI:
                 else:
                     return min( [minimax(st, depth+1) for st in cur_state.find_next_states()] )
 
-            def better_state(min_or_max):
-                def better_state_func((s1, i1), (s2, i2)):
-                    val = min_or_max(i1, i2)
-                    if i1 == val:
-                        return (s1, i1)
-                    else:
-                        return (s2, i2)
-                return better_state_func
 
             
             #print "my choices:" + str([ minimax ( st, depth+1) for st in state.find_next_states()])
@@ -93,36 +93,74 @@ class AI:
                 my_move = reduce(better_state(max), [ (st, minimax ( st, depth+1)) for st in state.find_next_states()])
             else: #player == 2:
                 my_move  = reduce(better_state(min), [ (st, minimax ( st, depth+1)) for st in state.find_next_states()])
-            print "                             value of picked move: " + str(my_move[1])
+            #print "                             value of picked move: " + str(my_move[1])
             return my_move[0]
 
+        #only keep track of the states at depth 1
         def alpha_beta_search(self, state, depth):
-            pass
+
+            def alpha_beta(cur_state, depth, alpha, beta):
+                if cutoff_test(cur_state, depth):
+                    return (self.evaluation_function(self, cur_state), beta)
+                if cur_state.player_to_move == 1:
+                    val = -sys.maxint -1
+                    for st in cur_state.find_next_states():
+                        new_val_and_beta = alpha_beta(st, depth+1, alpha, beta)
+                        beta = new_val_and_beta[1]
+                        val = max(val, new_val_and_beta[0])
+                        if val >= beta:
+                            return (val, alpha)
+                        alpha = max(alpha, val)
+                    return (val, alpha)
+                if cur_state.player_to_move == 2:
+                    val = sys.maxint
+                    for st in cur_state.find_next_states():
+                        new_val_and_alpha = alpha_beta(st, depth+1, alpha, beta)
+                        alpha = new_val_and_alpha[1]
+                        val = min(val, new_val_and_alpha[0])
+                        if val <= alpha:
+                            return (val, beta)
+                        beta = min(beta, val)
+                    return (val, beta)
+
+            if state.player_to_move == 1:
+                my_move = reduce(better_state(max), [ (st, alpha_beta ( st, depth+1, -sys.maxint-1, sys.maxint)) for st in state.find_next_states()])
+            else: #player == 2:
+                my_move  = reduce(better_state(min), [ (st, alpha_beta ( st, depth+1, -sys.maxint-1, sys.maxint)) for st in state.find_next_states()])
+            #print "                             value of picked move: " + str(my_move[1])
+            return my_move[0]
+
 
         if search_type == "minimax":
             return minimax_search
-        elif search_type == "alpha_beta":
+        elif search_type == "alphabeta":
             return alpha_beta_search
 
     def evaluation_picker(self, evaluation_strategy):
         def on_board(board, x, y):
-            return x <= 0 and y <=0 and x < board.columns and y < board.rows
+            return x >= 0 and y >=0 and x < board.columns and y < board.rows
 
         def evaluation_offensive(state):
+            if state.board.num_1 == 0:
+                return sys.maxint
+            if state.board.num_2 == 0:
+                return -sys.maxint -1
+
             val_p1 = 0
             val_p2 = 0
 
             for y in range(0, state.board.rows):
                 for x in range(0, state.board.columns):
+
                     if state.board.at(x,y) == 1:
                         if y == 0:
                             return sys.maxint
 
                         #feature for existing
-                        val_p1 += 5
+                        val_p1 += 10
 
                         #feature for how far along the piece is
-                        val_p1 += (state.board.rows - y) * .35
+                        val_p1 += (state.board.rows -1- y) * .8
                         
                         #feature for what it is attacking (enemy, ally, or empty)
                         if on_board(state.board, x-1, y-1):
@@ -175,28 +213,31 @@ class AI:
                         if y == state.board.rows-1:
                             return -sys.maxint - 1
 
+                        #print str( (x,y)) + ": " + str(state.board.at(x,y))
+
                         #feature for existing
-                        val_p2 += 4
+                        val_p2 += 10
 
                         #feature for how far along the piece is
-                        val_p2 += y * .35
+                        val_p2 += y * .6
                         
+                        #print "val2: " + str(val_p2)
                         #feature for what it is attacking (enemy, ally, or empty)
                         if on_board(state.board, x-1, y+1):
                             if state.board.at(x-1,y+1) == 1: #enemy
-                                val_p2 += 1.5
+                                val_p2 += 2
                             elif state.board.at(x-1,y+1) == 2: #ally
-                                val_p2 += 1
+                                val_p2 += 2
                             elif state.board.at(x-1,y+1) == 0: #empty
-                                val_p2 += 0.5
+                                val_p2 += 1
 
                         if on_board(state.board, x+1, y+1):
                             if state.board.at(x+1,y+1) == 1: #enemy
-                                val_p2 += 1.5
+                                val_p2 += 2
                             elif state.board.at(x+1,y+1) == 2: #ally
-                                val_p2 += 1
+                                val_p2 += 2
                             elif state.board.at(x+1,y+1) == 0: #empty
-                                val_p2 += 0.5
+                                val_p2 += 1
 
                         #feature for what is in front 
                         if on_board(state.board, x, y+1):
@@ -228,11 +269,142 @@ class AI:
                         if y == 0:
                             val_p2 += .25
 
-
+            #print str(val_p1)
+            #print str(val_p2)
             return val_p1 - val_p2
 
         def evaluation_defensive(state):
-            pass
+            if state.board.num_1 == 0:
+                return sys.maxint
+            if state.board.num_2 == 0:
+                return -sys.maxint -1
+
+            val_p1 = 0
+            val_p2 = 0
+
+            for y in range(0, state.board.rows):
+                for x in range(0, state.board.columns):
+
+                    if state.board.at(x,y) == 1:
+                        if y == 0:
+                            return sys.maxint
+
+                        #feature for existing
+                        val_p1 += 7
+
+                        #feature for how far along the piece is
+                        val_p1 += (state.board.rows -1- y) * .3
+                        
+                        #feature for what it is attacking (enemy, ally, or empty)
+                        if on_board(state.board, x-1, y-1):
+                            if state.board.at(x-1,y-1) == 2: #enemy
+                                val_p1 += 1.5
+                            elif state.board.at(x-1,y-1) == 1: #ally
+                                val_p1 += 2
+                            elif state.board.at(x-1,y-1) == 0: #empty
+                                val_p1 += 1
+
+                        if on_board(state.board, x+1, y-1):
+                            if state.board.at(x+1,y-1) == 2: #enemy
+                                val_p1 += 1.5
+                            elif state.board.at(x+1,y-1) == 1: #ally
+                                val_p1 += 2
+                            elif state.board.at(x+1,y-1) == 0: #empty
+                                val_p1 += 1
+
+                        #feature for what is in front 
+                        if on_board(state.board, x, y-1):
+                            if state.board.at(x,y-1) == 2: #enemy
+                                val_p1 += 0.25
+                            elif state.board.at(x,y-1) == 1: #ally
+                                val_p1 += 0.25
+                            elif state.board.at(x,y-1) == 0: #empty
+                                val_p1 += 0
+
+                        #feature for what is to the side
+                        if on_board(state.board, x-1, y):
+                            if state.board.at(x-1,y) == 2: #enemy
+                                val_p1 += -0.25
+                            elif state.board.at(x-1,y) == 1: #ally
+                                val_p1 += 0.25
+                            elif state.board.at(x-1,y) == 0: #empty
+                                val_p1 += 0
+
+                        if on_board(state.board, x+1, y):
+                            if state.board.at(x+1,y) == 2: #enemy
+                                val_p1 += -0.25
+                            elif state.board.at(x+1,y) == 1: #ally
+                                val_p1 += 0.5
+                            elif state.board.at(x+1,y) == 0: #empty
+                                val_p1 += 0
+
+                        #feature for being on home row
+                        if y == state.board.rows - 1:
+                            val_p1 += .25
+
+                    elif state.board.at(x,y) == 2:
+                        if y == state.board.rows-1:
+                            return -sys.maxint - 1
+
+                        #print str( (x,y)) + ": " + str(state.board.at(x,y))
+
+                        #feature for existing
+                        val_p2 += 7
+
+                        #feature for how far along the piece is
+                        val_p2 += y * .3
+                        
+                        #print "val2: " + str(val_p2)
+                        #feature for what it is attacking (enemy, ally, or empty)
+                        if on_board(state.board, x-1, y+1):
+                            if state.board.at(x-1,y+1) == 1: #enemy
+                                val_p2 += 1.5
+                            elif state.board.at(x-1,y+1) == 2: #ally
+                                val_p2 += 2
+                            elif state.board.at(x-1,y+1) == 0: #empty
+                                val_p2 += 1
+
+                        if on_board(state.board, x+1, y+1):
+                            if state.board.at(x+1,y+1) == 1: #enemy
+                                val_p2 += 1.5
+                            elif state.board.at(x+1,y+1) == 2: #ally
+                                val_p2 += 2
+                            elif state.board.at(x+1,y+1) == 0: #empty
+                                val_p2 += 1
+
+                        #feature for what is in front 
+                        if on_board(state.board, x, y+1):
+                            if state.board.at(x,y+1) == 1: #enemy
+                                val_p2 += 0.5
+                            elif state.board.at(x,y+1) == 2: #ally
+                                val_p2 += 0.5
+                            elif state.board.at(x,y+1) == 0: #empty
+                                val_p2 += 0
+
+                        #feature for what is to the side
+                        if on_board(state.board, x-1, y):
+                            if state.board.at(x-1,y) == 1: #enemy
+                                val_p2 += -0.25
+                            elif state.board.at(x-1,y) == 2: #ally
+                                val_p2 += 0.25
+                            elif state.board.at(x-1,y) == 0: #empty
+                                val_p2 += 0
+
+                        if on_board(state.board, x+1, y):
+                            if state.board.at(x+1,y) == 1: #enemy
+                                val_p2 += -0.25
+                            elif state.board.at(x+1,y) == 2: #ally
+                                val_p2 += 0.5
+                            elif state.board.at(x+1,y) == 0: #empty
+                                val_p2 += 0
+
+                        #feature for being on home row
+                        if y == 0:
+                            val_p2 += .25
+
+            #print str(val_p1)
+            #print str(val_p2)
+            return val_p1 - val_p2
 
 
         if evaluation_strategy == "offensive":

@@ -12,8 +12,9 @@ class Game:
 
     def play(self):
         #Play until someone wins
-        print "eval of starting = " + str( self.players[0].evaluation_function(self.players[0], self.current_state))
         util = 0
+        #print str( self.players[0].evaluation_function( self.players[0], self.current_state))
+        #return "Player 1"
         while not util:
             self.current_state = self.players[self.player_to_move-1].pick_move(self.current_state)
             if self.player_to_move == 1:
@@ -23,7 +24,7 @@ class Game:
             util = self.current_state.utility()
     
             self.current_state.board.print_board()
-            time.sleep(1)
+            #time.sleep(.5)
 
          
         if util == 1:
@@ -53,8 +54,8 @@ class Board:
                           [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
                           [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
                           [1, 1, 1, 1, 1, 1, 1, 1, 1, 1] ]
-            self.rows = 8
-            self.columns = 8
+            self.rows = 5
+            self.columns = 10
             self.num_1 = 20
             self.num_2 = 20
         elif board_option == 3: 
@@ -110,6 +111,11 @@ class State:
     #returns 1 for player 1 win
     #returns -1 for player 2 win
     def utility(self):
+        if self.board.num_1 == 0:
+            return -1
+        if self.board.num_2 == 0:
+            return -1
+
         for x in self.board.grid[0]:
             if x == 1:
                 return 1
@@ -150,8 +156,10 @@ class State:
 
 def main():
     #player1 = players.Human(1)
-    player1 = players.AI(1, 3, "offensive", "minimax")
-    player2 = players.AI(2, 3, "offensive", "minimax")
+    #player1 = players.AI(1, 3, "offensive", "minimax")
+    #player2 = players.AI(2, 3, "defensive", "minimax")
+    player1 = players.AI(1, 3, "offensive", "alphabeta")
+    player2 = players.AI(2, 3, "defensive", "alphabeta")
     
 
     game = Game(1, player1, player2)
