@@ -9,6 +9,7 @@ class Game:
         self.players = (player_one, player_two)
         board = Board(board_option)
         self.current_state = State(board, 1)
+        self.num_moves = 0
 
     def play(self):
         #Play until someone wins
@@ -36,8 +37,9 @@ class Game:
             elif self.player_to_move == 2:
                 self.player_to_move = 1
             util = self.current_state.utility()
+            self.num_moves +=1
 
-            self.current_state.board.print_board()
+            #self.current_state.board.print_board()
             #time.sleep(.5)
 
          
@@ -173,20 +175,129 @@ class State:
 
 def main():
     #player1 = players.Human(1)
-    player1 = players.AI(1, 3, "offensive", "minimax")
-    player2 = players.AI(2, 3, "defensive", "minimax")
-    player3 = players.AI(1, 3, "offensive", "alphabeta")
-    player4 = players.AI(2, 3, "defensive", "alphabeta")
+    #player1 = players.AI(1, 3, "offensive", "minimax")
+    #player2 = players.AI(2, 3, "defensive", "minimax")
+    #player3 = players.AI(1, 3, "offensive", "alphabeta")
+    #player4 = players.AI(2, 3, "defensive", "alphabeta")
     
 
     #game = Game(1, player1, player2)
     #winner = game.play()
     
+    #matchup 1
+    #print "Matchup 1"
+    #player1 = players.AI(1,3, "offensive", "minimax")
+    #player2 = players.AI(2,3, "defensive", "minimax")
+    #game = Game(1, player1, player2)
+    #winner = game.play()
 
-    game = Game(1, player3, player4)
+    #print "Winner is: " + winner
+    #game.current_state.board.print_board()
+    #print "Player 1 num expanded nodes: " + str(player1.nodes_expanded)
+    #print "Player 2 num expanded nodes: " + str(player2.nodes_expanded)
+    #print "Player 1 avg number nodes per move: " + str(player1.avg_num_nodes_expanded)
+    #print "Player 2 avg number nodes per move: " + str(player2.avg_num_nodes_expanded)
+    #print "Player 1 avg time per move: " + str(player1.avg_move_time)
+    #print "Player 2 avg time per move: " + str(player2.avg_move_time)
+    #print "Player 1 captured " + str(game.current_state.board.columns*2 - game.current_state.board.num_2) + "pieces"
+    #print "Player 2 captured " + str(game.current_state.board.columns*2 - game.current_state.board.num_1) + "pieces"
+    #print "Total moves elapsed: " + str(game.num_moves)
+
+
+    ##matchup 2
+    #print "Matchup 2"
+    #player1 = players.AI(1,3, "offensive", "alphabeta")
+    #player2 = players.AI(2,3, "defensive", "alphabeta")
+    #game = Game(1, player1, player2)
+    #winner = game.play()
+
+    #print "Winner is: " + winner
+    #game.current_state.board.print_board()
+    #print "Player 1 num expanded nodes: " + str(player1.nodes_expanded)
+    #print "Player 2 num expanded nodes: " + str(player2.nodes_expanded)
+    #print "Player 1 avg number nodes per move: " + str(player1.avg_num_nodes_expanded)
+    #print "Player 2 avg number nodes per move: " + str(player2.avg_num_nodes_expanded)
+    #print "Player 1 avg time per move: " + str(player1.avg_move_time)
+    #print "Player 2 avg time per move: " + str(player2.avg_move_time)
+    #print "Player 1 captured " + str(game.current_state.board.columns*2 - game.current_state.board.num_2) + "pieces"
+    #print "Player 2 captured " + str(game.current_state.board.columns*2 - game.current_state.board.num_1) + "pieces"
+    #print "Total moves elapsed: " + str(game.num_moves)
+
+
+    ##matchup 3
+    #print "Matchup 3"
+    #player1 = players.AI(1,3, "offensive", "minimax")
+    #player2 = players.AI(2,3, "offensive", "alphabeta")
+    #game = Game(1, player1, player2)
+    #winner = game.play()
+
+    #print "Winner is: " + winner
+    #game.current_state.board.print_board()
+    #print "Player 1 num expanded nodes: " + str(player1.nodes_expanded)
+    #print "Player 2 num expanded nodes: " + str(player2.nodes_expanded)
+    #print "Player 1 avg number nodes per move: " + str(player1.avg_num_nodes_expanded)
+    #print "Player 2 avg number nodes per move: " + str(player2.avg_num_nodes_expanded)
+    #print "Player 1 avg time per move: " + str(player1.avg_move_time)
+    #print "Player 2 avg time per move: " + str(player2.avg_move_time)
+    #print "Player 1 captured " + str(game.current_state.board.columns*2 - game.current_state.board.num_2) + "pieces"
+    #print "Player 2 captured " + str(game.current_state.board.columns*2 - game.current_state.board.num_1) + "pieces"
+    #print "Total moves elapsed: " + str(game.num_moves)
+
+    ##matchup 4
+    #print "Matchup 4"
+    #player1 = players.AI(1,3, "defensive", "alphabeta")
+    #player2 = players.AI(2,3, "defensive", "minimax")
+    #game = Game(1, player1, player2)
+    #winner = game.play()
+
+    #print "Winner is: " + winner
+    #game.current_state.board.print_board()
+    #print "Player 1 num expanded nodes: " + str(player1.nodes_expanded)
+    #print "Player 2 num expanded nodes: " + str(player2.nodes_expanded)
+    #print "Player 1 avg number nodes per move: " + str(player1.avg_num_nodes_expanded)
+    #print "Player 2 avg number nodes per move: " + str(player2.avg_num_nodes_expanded)
+    #print "Player 1 avg time per move: " + str(player1.avg_move_time)
+    #print "Player 2 avg time per move: " + str(player2.avg_move_time)
+    #print "Player 1 captured " + str(game.current_state.board.columns*2 - game.current_state.board.num_2) + "pieces"
+    #print "Player 2 captured " + str(game.current_state.board.columns*2 - game.current_state.board.num_1) + "pieces"
+    #print "Total moves elapsed: " + str(game.num_moves)
+
+    #matchup 4
+    print "Matchup 6"
+    player1 = players.AI(1,3, "defensive", "alphabeta")
+    player2 = players.AI(2,3, "defensive", "minimax")
+    game = Game(2, player1, player2)
     winner = game.play()
 
     print "Winner is: " + winner
+    game.current_state.board.print_board()
+    print "Player 1 num expanded nodes: " + str(player1.nodes_expanded)
+    print "Player 2 num expanded nodes: " + str(player2.nodes_expanded)
+    print "Player 1 avg number nodes per move: " + str(player1.avg_num_nodes_expanded)
+    print "Player 2 avg number nodes per move: " + str(player2.avg_num_nodes_expanded)
+    print "Player 1 avg time per move: " + str(player1.avg_move_time)
+    print "Player 2 avg time per move: " + str(player2.avg_move_time)
+    print "Player 1 captured " + str(game.current_state.board.columns*2 - game.current_state.board.num_2) + "pieces"
+    print "Player 2 captured " + str(game.current_state.board.columns*2 - game.current_state.board.num_1) + "pieces"
+    print "Total moves elapsed: " + str(game.num_moves)
+
+    print "Matchup 6"
+    player1 = players.AI(1,3, "offensive", "alphabeta")
+    player2 = players.AI(2,3, "offensive", "minimax")
+    game = Game(2, player1, player2)
+    winner = game.play()
+
+    print "Winner is: " + winner
+    game.current_state.board.print_board()
+    print "Player 1 num expanded nodes: " + str(player1.nodes_expanded)
+    print "Player 2 num expanded nodes: " + str(player2.nodes_expanded)
+    print "Player 1 avg number nodes per move: " + str(player1.avg_num_nodes_expanded)
+    print "Player 2 avg number nodes per move: " + str(player2.avg_num_nodes_expanded)
+    print "Player 1 avg time per move: " + str(player1.avg_move_time)
+    print "Player 2 avg time per move: " + str(player2.avg_move_time)
+    print "Player 1 captured " + str(game.current_state.board.columns*2 - game.current_state.board.num_2) + "pieces"
+    print "Player 2 captured " + str(game.current_state.board.columns*2 - game.current_state.board.num_1) + "pieces"
+    print "Total moves elapsed: " + str(game.num_moves)
 
 if __name__ == '__main__':
     main()

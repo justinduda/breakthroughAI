@@ -1,0 +1,36 @@
+Matchup 6
+Winner is: Player 1
+5  0002222212
+4  2222222200
+3  1200000020
+2  0111111010
+1  0101111110
+
+   abcdefghij
+Player 1 num expanded nodes: 49705
+Player 2 num expanded nodes: 190499
+Player 1 avg number nodes per move: 3058
+Player 2 avg number nodes per move: 15631
+Player 1 avg time per move: 0:00:00.035156
+Player 2 avg time per move: 0:00:01.406250
+Player 1 captured 4pieces
+Player 2 captured 4pieces
+Total moves elapsed: 21
+Matchup 6
+Winner is: Player 2
+5  0002222222
+4  2102222200
+3  0000000002
+2  0011111101
+1  2001111111
+
+   abcdefghij
+Player 1 num expanded nodes: 55915
+Player 2 num expanded nodes: 217434
+Player 1 avg number nodes per move: 5055
+Player 2 avg number nodes per move: 15715
+Player 1 avg time per move: 0:00:00.500000
+Player 2 avg time per move: 0:00:01.001953
+Player 1 captured 5pieces
+Player 2 captured 5pieces
+Total moves elapsed: 22

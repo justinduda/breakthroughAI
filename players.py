@@ -1,3 +1,4 @@
+import datetime
 import game
 import sys
 
@@ -55,9 +56,31 @@ class AI:
         self.search = self.search_picker(search_type)
         self.cut_off_depth = cut_off_depth
         self.transposition_table = {}
+        self.nodes_expanded = 0
+        self.cur_nodes_expanded = 0
+        self.avg_num_nodes_expanded = 0
+        self.avg_move_time = 0
 
     def pick_move(self, state):
-        return self.search(self, state, 0)
+        a = datetime.datetime.now().replace(microsecond=0)
+
+        ret =  self.search(self, state, 0)
+
+        b = datetime.datetime.now().replace(microsecond=0)
+        if self.avg_move_time == 0:
+            self.avg_move_time = b-a
+        else:
+            self.avg_move_time = (self.avg_move_time+b-a)/2
+
+        if self.avg_num_nodes_expanded == 0:
+            self.avg_num_nodes_expanded = self.cur_nodes_expanded
+        else:
+            self.avg_num_nodes_expanded = (self.avg_num_nodes_expanded+self.cur_nodes_expanded)/2
+
+        self.nodes_expanded += self.cur_nodes_expanded
+        self.cur_nodes_expanded = 0
+        
+        return ret
 
 
     def search_picker(self, search_type):
@@ -75,7 +98,8 @@ class AI:
 
         def minimax_search(self, state, depth):
             
-            def minimax(cur_state, depth):  
+            def minimax(cur_state, depth):
+                self.cur_nodes_expanded += 1
                 if cutoff_test(cur_state, depth):
                     return self.evaluation_function(self, cur_state)
                 if cur_state.player_to_move == 1:
@@ -100,11 +124,11 @@ class AI:
         #only keep track of the states at depth 1
         def alpha_beta_search(self, state, depth):
 
-            #def reorder_moves(sts, comp):
-            def reorder_moves(sts):
+            def reorder_moves(sts, comp):
+            #def reorder_moves(sts):
                 def higher_or_equal_priority(lhs, rhs):
-                    #return lhs[1] == comp(lhs[1], rhs[1])
-                    return lhs.board.num_1 + lhs.board.num_2 - rhs.board.num_2 - rhs.board.num_2 <= 0
+                    return lhs[1] == comp(lhs[1], rhs[1])
+                    #return lhs.board.num_1 + lhs.board.num_2 - rhs.board.num_2 - rhs.board.num_2 <= 0
 
                 if len(sts) <= 1:
                     return sts
@@ -113,42 +137,9 @@ class AI:
                 right = [x for x in sts if not higher_or_equal_priority(x, pivot)]
                 return left + [pivot] + right
 
-            #def alpha_beta(cur_state, depth, alpha, beta):
-            #    if cutoff_test(cur_state, depth):
-            #        return self.evaluation_function(self, cur_state)
-            #    if cur_state.player_to_move == 1:
-            #        val = -sys.maxint -1
-            #        for st in cur_state.find_next_states():
-            #            new_val = alpha_beta(st, depth+1, alpha, beta)
-            #            #beta = new_val_and_beta[1]
-            #            val = max(val, new_val)
-            #            if val >= beta: 
-            #                return val
-            #            alpha = max(alpha, val)
-            #        return val
-            #    if cur_state.player_to_move == 2: 
-            #        val = sys.maxint
-            #        for st in cur_state.find_next_states():
-            #            new_val_and_alpha = alpha_beta(st, depth+1, alpha, beta)
-            #            #alpha = new_val_and_alpha[1]
-            #            val = min(val, new_val_and_alpha[0])
-            #            if val <= alpha:
-            #                return (val, beta)
-            #            beta = min(beta, val)
-            #        return (val, beta)
-
-
-            #if state.player_to_move == 1:
-            #    my_move = reduce(better_state(max), [ (st, alpha_beta ( st, depth+1, -sys.maxint-1, sys.maxint)) for st in state.find_next_states()])
-            #else: #player == 2:
-            #    my_move  = reduce(better_state(min), [ (st, alpha_beta ( st, depth+1, -sys.maxint-1, sys.maxint)) for st in state.find_next_states()])
-            #    #print "                             value of picked move: " + str(my_move[1])
-            #return my_move[0]
-
 
             def alpha_beta(cur_state, depth, alpha, beta):
-                
-
+                self.cur_nodes_expanded += 1
 
                 if cutoff_test(cur_state, depth):
                     #if cur_state.player_to_move == 1:
@@ -156,8 +147,8 @@ class AI:
                     #else: #player 2
                     return self.evaluation_function(self, cur_state)
 
-                next_states = cur_state.find_next_states()
-                reordered_moves = reorder_moves(next_states)
+                #next_states = cur_state.find_next_states()
+                #reordered_moves = reorder_moves(next_states)
                 #states_and_values = zip(next_states, [self.evaluation_function(self, st) for st in next_states])
 
                 if cur_state.player_to_move == 1:
@@ -438,9 +429,9 @@ class AI:
                         #feature for what is in front 
                         if on_board(state.board, x, y+1):
                             if state.board.at(x,y+1) == 1: #enemy
-                                val_p2 += 0.5
+                                val_p2 += 0.25
                             elif state.board.at(x,y+1) == 2: #ally
-                                val_p2 += 0.5
+                                val_p2 += 0.25
                             elif state.board.at(x,y+1) == 0: #empty
                                 val_p2 += 0
 
