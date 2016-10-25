@@ -15,6 +15,20 @@ class Game:
         util = 0
         #print str( self.players[0].evaluation_function( self.players[0], self.current_state))
         #return "Player 1"
+
+        #self.current_state.board.set_grid(
+        #               [[0,0,0,0,0,0,0,0],
+        #                [0,0,0,0,0,0,0,0],
+        #                [0,0,0,0,0,0,0,0],
+        #                [0,0,0,2,2,0,0,0],
+        #                [0,0,0,0,0,0,0,0],
+        #                [0,0,0,0,0,0,0,0],
+        #                [0,0,0,1,1,0,0,0],
+        #                [0,0,0,0,0,0,0,0]]
+        #               )
+        #self.current_state.board.num_1 = 1
+        #self.current_state.board.num_2 = 1
+
         while not util:
             self.current_state = self.players[self.player_to_move-1].pick_move(self.current_state)
             if self.player_to_move == 1:
@@ -22,7 +36,7 @@ class Game:
             elif self.player_to_move == 2:
                 self.player_to_move = 1
             util = self.current_state.utility()
-    
+
             self.current_state.board.print_board()
             #time.sleep(.5)
 
@@ -74,6 +88,9 @@ class Board:
     def set(self, x, y, num):
         self.grid[y][x] = num
 
+    def set_grid(self, new_grid):
+        self.grid = [list(sublist) for sublist in new_grid]
+
     def move(self, x1, y1, x2, y2):
         new_board = Board(3, self)
 
@@ -114,7 +131,7 @@ class State:
         if self.board.num_1 == 0:
             return -1
         if self.board.num_2 == 0:
-            return -1
+            return 1
 
         for x in self.board.grid[0]:
             if x == 1:
@@ -156,14 +173,19 @@ class State:
 
 def main():
     #player1 = players.Human(1)
-    #player1 = players.AI(1, 3, "offensive", "minimax")
-    #player2 = players.AI(2, 3, "defensive", "minimax")
-    player1 = players.AI(1, 3, "offensive", "alphabeta")
-    player2 = players.AI(2, 3, "defensive", "alphabeta")
+    player1 = players.AI(1, 3, "offensive", "minimax")
+    player2 = players.AI(2, 3, "defensive", "minimax")
+    player3 = players.AI(1, 3, "offensive", "alphabeta")
+    player4 = players.AI(2, 3, "defensive", "alphabeta")
     
 
-    game = Game(1, player1, player2)
+    #game = Game(1, player1, player2)
+    #winner = game.play()
+    
+
+    game = Game(1, player3, player4)
     winner = game.play()
+
     print "Winner is: " + winner
 
 if __name__ == '__main__':

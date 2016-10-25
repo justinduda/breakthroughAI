@@ -88,6 +88,7 @@ class AI:
             #print "my choices:" + str([ minimax ( st, depth+1) for st in state.find_next_states()])
             #print ""
 
+            #print "eval: " + str( minimax( state, 0))
 
             if state.player_to_move == 1:
                 my_move = reduce(better_state(max), [ (st, minimax ( st, depth+1)) for st in state.find_next_states()])
@@ -99,34 +100,96 @@ class AI:
         #only keep track of the states at depth 1
         def alpha_beta_search(self, state, depth):
 
+            #def reorder_moves(sts, comp):
+            def reorder_moves(sts):
+                def higher_or_equal_priority(lhs, rhs):
+                    #return lhs[1] == comp(lhs[1], rhs[1])
+                    return lhs.board.num_1 + lhs.board.num_2 - rhs.board.num_2 - rhs.board.num_2 <= 0
+
+                if len(sts) <= 1:
+                    return sts
+                pivot = sts.pop()
+                left = [x for x in sts if higher_or_equal_priority(x, pivot)]
+                right = [x for x in sts if not higher_or_equal_priority(x, pivot)]
+                return left + [pivot] + right
+
+            #def alpha_beta(cur_state, depth, alpha, beta):
+            #    if cutoff_test(cur_state, depth):
+            #        return self.evaluation_function(self, cur_state)
+            #    if cur_state.player_to_move == 1:
+            #        val = -sys.maxint -1
+            #        for st in cur_state.find_next_states():
+            #            new_val = alpha_beta(st, depth+1, alpha, beta)
+            #            #beta = new_val_and_beta[1]
+            #            val = max(val, new_val)
+            #            if val >= beta: 
+            #                return val
+            #            alpha = max(alpha, val)
+            #        return val
+            #    if cur_state.player_to_move == 2: 
+            #        val = sys.maxint
+            #        for st in cur_state.find_next_states():
+            #            new_val_and_alpha = alpha_beta(st, depth+1, alpha, beta)
+            #            #alpha = new_val_and_alpha[1]
+            #            val = min(val, new_val_and_alpha[0])
+            #            if val <= alpha:
+            #                return (val, beta)
+            #            beta = min(beta, val)
+            #        return (val, beta)
+
+
+            #if state.player_to_move == 1:
+            #    my_move = reduce(better_state(max), [ (st, alpha_beta ( st, depth+1, -sys.maxint-1, sys.maxint)) for st in state.find_next_states()])
+            #else: #player == 2:
+            #    my_move  = reduce(better_state(min), [ (st, alpha_beta ( st, depth+1, -sys.maxint-1, sys.maxint)) for st in state.find_next_states()])
+            #    #print "                             value of picked move: " + str(my_move[1])
+            #return my_move[0]
+
+
             def alpha_beta(cur_state, depth, alpha, beta):
+                
+
+
                 if cutoff_test(cur_state, depth):
-                    return (self.evaluation_function(self, cur_state), beta)
+                    #if cur_state.player_to_move == 1:
+                        #return self.evaluation_function(self, cur_state)
+                    #else: #player 2
+                    return self.evaluation_function(self, cur_state)
+
+                next_states = cur_state.find_next_states()
+                reordered_moves = reorder_moves(next_states)
+                #states_and_values = zip(next_states, [self.evaluation_function(self, st) for st in next_states])
+
                 if cur_state.player_to_move == 1:
                     val = -sys.maxint -1
+                    #reordered_moves = [x[0] for x in reorder_moves(states_and_values, max)]
                     for st in cur_state.find_next_states():
-                        new_val_and_beta = alpha_beta(st, depth+1, alpha, beta)
-                        beta = new_val_and_beta[1]
-                        val = max(val, new_val_and_beta[0])
+                    #for st in reordered_moves:
+                        val = max(val, alpha_beta(st, depth+1, alpha, beta))
                         if val >= beta:
-                            return (val, alpha)
+                            return val
                         alpha = max(alpha, val)
-                    return (val, alpha)
+
+                    return val
                 if cur_state.player_to_move == 2:
                     val = sys.maxint
+                    #reordered_moves = [x[0] for x in reorder_moves(states_and_values, min)]
                     for st in cur_state.find_next_states():
-                        new_val_and_alpha = alpha_beta(st, depth+1, alpha, beta)
-                        alpha = new_val_and_alpha[1]
-                        val = min(val, new_val_and_alpha[0])
+                    #for st in reordered_moves:
+                        val = min(val, alpha_beta(st, depth+1, alpha, beta))
                         if val <= alpha:
-                            return (val, beta)
+                            return val
                         beta = min(beta, val)
-                    return (val, beta)
+                    return val
+
+            #print "eval: " + str( alpha_beta( state, 0, -sys.maxint-1, sys.maxint))
+
 
             if state.player_to_move == 1:
+
                 my_move = reduce(better_state(max), [ (st, alpha_beta ( st, depth+1, -sys.maxint-1, sys.maxint)) for st in state.find_next_states()])
             else: #player == 2:
-                my_move  = reduce(better_state(min), [ (st, alpha_beta ( st, depth+1, -sys.maxint-1, sys.maxint)) for st in state.find_next_states()])
+                my_move = reduce(better_state(min), [ (st, alpha_beta ( st, depth+1, -sys.maxint-1, sys.maxint)) for st in state.find_next_states()])
             #print "                             value of picked move: " + str(my_move[1])
             return my_move[0]
 
@@ -142,9 +205,9 @@ class AI:
 
         def evaluation_offensive(state):
             if state.board.num_1 == 0:
-                return sys.maxint
-            if state.board.num_2 == 0:
                 return -sys.maxint -1
+            if state.board.num_2 == 0:
+                return sys.maxint
 
             val_p1 = 0
             val_p2 = 0
@@ -157,10 +220,10 @@ class AI:
                             return sys.maxint
 
                         #feature for existing
-                        val_p1 += 10
+                        val_p1 += 15
 
                         #feature for how far along the piece is
-                        val_p1 += (state.board.rows -1- y) * .8
+                        val_p1 += (state.board.rows -1- y) * .5
                         
                         #feature for what it is attacking (enemy, ally, or empty)
                         if on_board(state.board, x-1, y-1):
@@ -216,10 +279,10 @@ class AI:
                         #print str( (x,y)) + ": " + str(state.board.at(x,y))
 
                         #feature for existing
-                        val_p2 += 10
+                        val_p2 += 15
 
                         #feature for how far along the piece is
-                        val_p2 += y * .6
+                        val_p2 += y * .5
                         
                         #print "val2: " + str(val_p2)
                         #feature for what it is attacking (enemy, ally, or empty)
@@ -275,9 +338,9 @@ class AI:
 
         def evaluation_defensive(state):
             if state.board.num_1 == 0:
-                return sys.maxint
-            if state.board.num_2 == 0:
                 return -sys.maxint -1
+            if state.board.num_2 == 0:
+                return sys.maxint
 
             val_p1 = 0
             val_p2 = 0
