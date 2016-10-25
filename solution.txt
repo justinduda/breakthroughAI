@@ -1,0 +1,84 @@
+Matchup 1
+Winner is: Player 2
+8  00002200
+7  10022220
+6  02222220
+5  00000000
+4  00000000
+3  00011100
+2  00111010
+1  20011110
+
+   abcdefgh
+Player 1 num expanded nodes: 282299
+Player 2 num expanded nodes: 269276
+Player 1 avg number nodes per move: 7993
+Player 2 avg number nodes per move: 7668
+Player 1 avg time per move: 0:00:00.003665
+Player 2 avg time per move: 0:00:00.999023
+Player 1 captured 3pieces
+Player 2 captured 4pieces
+Total moves elapsed: 48
+Matchup 2
+Winner is: Player 2
+8  00002200
+7  10022220
+6  02222220
+5  00000000
+4  00000000
+3  00011100
+2  00111010
+1  20011110
+
+   abcdefgh
+Player 1 num expanded nodes: 104956
+Player 2 num expanded nodes: 102068
+Player 1 avg number nodes per move: 2483
+Player 2 avg number nodes per move: 3440
+Player 1 avg time per move: 0:00:00.580238
+Player 2 avg time per move: 0:00:00.129711
+Player 1 captured 3pieces
+Player 2 captured 4pieces
+Total moves elapsed: 48
+Matchup 3
+Winner is: Player 2
+8  00000000
+7  10202220
+6  00020200
+5  00002000
+4  00001010
+3  00101100
+2  00001010
+1  20000100
+
+   abcdefgh
+Player 1 num expanded nodes: 351807
+Player 2 num expanded nodes: 114635
+Player 1 avg number nodes per move: 4268
+Player 2 avg number nodes per move: 1507
+Player 1 avg time per move: 0:00:00.035479
+Player 2 avg time per move: 0:00:00.125492
+Player 1 captured 8pieces
+Player 2 captured 7pieces
+Total moves elapsed: 76
+Matchup 4
+Winner is: Player 2
+8  00002200
+7  00122220
+6  00002220
+5  00000000
+4  00001000
+3  01000100
+2  00011100
+1  02001110
+
+   abcdefgh
+Player 1 num expanded nodes: 116484
+Player 2 num expanded nodes: 287022
+Player 1 avg number nodes per move: 1886
+Player 2 avg number nodes per move: 4652
+Player 1 avg time per move: 0:00:00.132837
+Player 2 avg time per move: 0:00:00.550773
+Player 1 captured 6pieces
+Player 2 captured 6pieces
+Total moves elapsed: 56
